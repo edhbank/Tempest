@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="tempestApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Tempest Weather Dashboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <meta http-equiv="refresh" content="300"> <!-- fallback refresh -->
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 100%; background: black; margin: 20px; }
+    h1 { color: green; }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    h2 { color: lightgreen; }
+    .card {
+      background: black;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    .card h3 { margin-top: 0; }
+  </style>
+</head>
+<body ng-controller="TempestController">
+  <h1>🌤️ Ed's backyard Weather (Live)</h1>
+
+  <div class="card" color="green" ng-if="data.obs_st">
+    <h2>🌀 Latest Observation</h2>
+    <p><H2><strong>Time:</strong> {{ data.obs_st.time }}</H2> </p>
+    <p><H2><strong>Temp:</strong>  <large> {{ data.obs_st.temperature }} °F</large></H2></p>
+    <p><H2><strong>Humidity:</strong> {{ data.obs_st.humidity }} %</H2></p>
+    <p><H2><strong>Wind:</strong> {{ data.obs_st.wind_avg }} mph from {{ data.obs_st.wind_dir }}°</H2></p>
+    <p><H2><strong>Rain Today:</strong> {{ data.obs_st.rain }} in</H2></p>
+    <p><H2><strong>Pressure:</strong> {{ data.obs_st.pressure }} inHg</H2></p>
+  </div>
+
+  <div class="card" ng-if="data.rapid_wind">
+    <h3>💨 Rapid Wind</h3>
+    <p><strong>Speed:</strong> {{ data.rapid_wind.speed }} mph</p>
+    <p><strong>Direction:</strong> {{ data.rapid_wind.direction }}°</p>
+  </div>
+
+  <div class="card" ng-if="data.evt_precip">
+    <h3>☔ Rain Started</h3>
+    <p><strong>Time:</strong> {{ data.evt_precip.time }}</p>
+  </div>
+
+  <script>
+    angular.module('tempestApp', [])
+      .controller('TempestController', function($scope, $http, $interval) {
+        function loadData() {
+          $http.get('/data.json').then(function(response) {
+            $scope.data = response.data;
+          });
+        }
+        loadData();
+        $interval(loadData, 10000);
+      });
+  </script>
+</body>
+</html>
